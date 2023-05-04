@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/nav_graph"
+    app:startDestination="@+id/hotelListFragment">
+
+    <fragment
+        android:id="@+id/hotelListFragment"
+        android:name="com.example.hotelreservation.Presentation.View.HotelListFragment"
+        android:label="Fragment"
+        tools:layout="@layout/hotel_list_fragment">
+        <action
+            android:id="@+id/action_hotelListFragment_to_bookingFragment"
+            app:destination="@id/bookingFragment"
+            app:enterAnim="@anim/slide_in_right"
+            app:exitAnim="@anim/slide_out_left"
+            app:popEnterAnim="@anim/slide_in_left"
+            app:popExitAnim="@anim/slide_out_right">
+            <argument
+                android:name="hotelId"
+                app:argType="integer" />
+        </action>
+    </fragment>
+    <fragment
+        android:id="@+id/bookingListFragment"
+        android:name="com.example.hotelreservation.Presentation.View.BookingListFragment"
+        android:label="Fragment"
+        tools:layout="@layout/booking_list_fragment">
+        <action
+            android:id="@+id/action_bookingListFragment_to_bookingFragment"
+            app:destination="@id/bookingFragment">
+            <argument
+                android:name="bookingInfo"
+                app:argType="com.example.hotelreservation.Presentation.Repository.Model.BookingInfo" />
+        </action>
+    </fragment>
+    <fragment
+        android:id="@+id/bookingFragment"
+        android:name="com.example.hotelreservation.Presentation.View.BookingFragment"
+        android:label="Fragment"
+        tools:layout="@layout/booking_fragment"></fragment>
+
+
+</navigation>

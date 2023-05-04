@@ -1,0 +1,10 @@
+<resources>
+    <string name="app_name">Бронирование номеров</string>
+    <string name="room_prompt">Select a room</string>
+    <string-array name="room_types">
+        <item>Standard Room</item>
+        <item>Deluxe Room</item>
+        <item>Suite</item>
+    </string-array>
+    <!-- other strings here -->
+</resources>

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/navigation_hotels"
+        android:icon="@drawable/ic_hotel_foreground"
+        android:title="Отели" />
+    <item
+        android:id="@+id/navigation_bookings"
+        android:icon="@drawable/ic_reservation_foreground"
+        android:title="Бронирования" />
+</menu>
