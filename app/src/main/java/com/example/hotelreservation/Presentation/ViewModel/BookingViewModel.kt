@@ -9,6 +9,12 @@ import com.example.hotelreservation.Presentation.Repository.Model.Room
 
 class BookingViewModel : ViewModel() {
 
+    var checkInDate: String? = null
+    var checkOutDate: String? = null
+    var roomPosition: Int? = null
+    var isCheckInSelected: Boolean = false
+    var isCheckOutSelected: Boolean = false
+
     fun getRoomsByHotel(hotelId: Int): LiveData<List<Room>> {
         return ServiceLocator.getInstance().getRepository().getRoomsByHotel(hotelId)
     }

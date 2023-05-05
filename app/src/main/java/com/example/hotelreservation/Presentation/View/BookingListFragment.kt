@@ -36,8 +36,7 @@ class BookingListFragment : Fragment() {
 
     private fun setUpRecyclerView(bookingInfo: List<BookingInfo>) {
         val adapter = BookingListAdapter(bookingInfo)
-        val layoutManager = LinearLayoutManager(context)
-        binding.bookingList.layoutManager = layoutManager
+        binding.bookingList.layoutManager = LinearLayoutManager(context)
         binding.bookingList.adapter = adapter
         adapter.setOnItemClickListener { info ->
             val action = BookingListFragmentDirections.actionBookingListFragmentToBookingFragment(info)

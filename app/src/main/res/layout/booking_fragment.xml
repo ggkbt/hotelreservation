@@ -32,6 +32,12 @@
         android:layout_height="wrap_content"
         android:hint="Email гостя" />
 
+    <Button
+        android:id="@+id/open_contacts"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Выбрать гостя из контактов" />
+
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

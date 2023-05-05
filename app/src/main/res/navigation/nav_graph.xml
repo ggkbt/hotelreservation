@@ -39,7 +39,25 @@
         android:id="@+id/bookingFragment"
         android:name="com.example.hotelreservation.Presentation.View.BookingFragment"
         android:label="Fragment"
-        tools:layout="@layout/booking_fragment"></fragment>
+        tools:layout="@layout/booking_fragment">
+        <action
+            android:id="@+id/action_bookingFragment_to_contactListFragment"
+            app:destination="@id/contactListFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/contactListFragment"
+        android:name="com.example.hotelreservation.Presentation.View.ContactListFragment"
+        android:label="ContactListFragment"
+        tools:layout="@layout/contact_list_fragment">
+        <action
+            android:id="@+id/action_contactListFragment_to_bookingFragment"
+            app:destination="@id/bookingFragment">
+            <argument
+                android:name="contact"
+                app:argType="com.example.hotelreservation.Presentation.Repository.Model.Contact"
+            />
+        </action>
+    </fragment>
 
 
 </navigation>

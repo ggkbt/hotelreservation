@@ -2,7 +2,6 @@ package com.example.hotelreservation.Presentation.View
 
 import android.app.DatePickerDialog
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -11,8 +10,10 @@ import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.Navigation
+import androidx.navigation.fragment.findNavController
 import com.example.hotelreservation.Presentation.Repository.Model.BookingInfo
 import com.example.hotelreservation.Presentation.Repository.Model.Booking
+import com.example.hotelreservation.Presentation.Repository.Model.Contact
 import com.example.hotelreservation.Presentation.View.Adapters.RoomSpinnerAdapter
 import com.example.hotelreservation.Presentation.ViewModel.BookingViewModel
 import com.example.hotelreservation.R
@@ -46,11 +47,18 @@ class BookingFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        Log.d("TAG123", "onViewCreated - hotelId: $hotelId, bookingInfo: $bookingInfo")
-        var isCheckInSelected = false
-        var isCheckOutSelected = false
+        val navController = findNavController()
+        navController.currentBackStackEntry?.savedStateHandle?.getLiveData<Contact>("contactFromProvider")
+            ?.observe(viewLifecycleOwner) { contact ->
+                contact?.let {
+                    with(binding) {
+                        guestName.setText(it.name)
+                        guestPhone.setText(it.phoneNumber ?: "")
+                        guestEmail.setText(it.email ?: "")
+                    }
+                }
+            }
         viewModel = ViewModelProvider(this)[BookingViewModel::class.java]
-        binding.hotelName.text = "Selected hotel: " + hotelId.toString()
 
         if (bookingInfo != null) {
             editMode = true
@@ -63,17 +71,14 @@ class BookingFragment : Fragment() {
                 checkOutDate.text = bookingInfo?.booking?.checkOutDate
             }
 
-            isCheckInSelected = true
-            isCheckOutSelected = true
-            Log.d("TAG123", "HOTEL ID: ${bookingInfo?.hotel?.id}")
+            viewModel.isCheckInSelected = true
+            viewModel.isCheckOutSelected = true
             bookingInfo?.hotel?.id?.let {
                 fillRoomSpinner(it)
             }
         }
 
         if (hotelId != -1) {
-            Log.d("TAG123", "hotelId?.let: $hotelId")
-
             hotelId?.let {
                 viewModel.getHotelById(it).observe(viewLifecycleOwner) { hotelList ->
                     binding.hotelName.text = hotelList[0].name
@@ -87,7 +92,7 @@ class BookingFragment : Fragment() {
             showDatePickerDialog { year, month, dayOfMonth ->
                 // Update button text with selected date
                 binding.checkInDate.text = "$dayOfMonth/${month + 1}/$year"
-                isCheckInSelected = true
+                viewModel.isCheckInSelected = true
             }
         }
 
@@ -95,7 +100,7 @@ class BookingFragment : Fragment() {
             showDatePickerDialog { year, month, dayOfMonth ->
                 // Update button text with selected date
                 binding.checkOutDate.text = "$dayOfMonth/${month + 1}/$year"
-                isCheckOutSelected = true
+                viewModel.isCheckOutSelected = true
             }
         }
 
@@ -103,7 +108,6 @@ class BookingFragment : Fragment() {
             override fun onItemSelected(
                 parent: AdapterView<*>?, view: View?, position: Int, id: Long
             ) {
-                Log.d("TAG123", "onItemSelected")
                 selectedRoomId = roomAdapter?.getItem(position)?.id
             }
 
@@ -114,7 +118,7 @@ class BookingFragment : Fragment() {
             val guestName = binding.guestName.text.toString()
             val guestEmail = binding.guestEmail.text.toString()
             val guestPhone = binding.guestPhone.text.toString()
-            if (guestName.isEmpty() || guestEmail.isEmpty() || guestPhone.isEmpty() || !isCheckInSelected || !isCheckOutSelected) {
+            if (guestName.isEmpty() || guestEmail.isEmpty() || guestPhone.isEmpty() || !viewModel.isCheckInSelected || !viewModel.isCheckOutSelected) {
                 Toast.makeText(
                     requireContext(), "Пожалуйста, заполните все поля", Toast.LENGTH_SHORT
                 ).show()
@@ -137,7 +141,6 @@ class BookingFragment : Fragment() {
                 }
             }
 
-            booking?.let { booking1 -> Log.d("TAG123", booking1.toString()) }
             if (booking != null && !editMode) {
                 viewModel.addBooking(booking)
             }
@@ -145,6 +148,23 @@ class BookingFragment : Fragment() {
                 viewModel.updateBooking(booking)
             }
             Navigation.findNavController(it).navigate(R.id.bookingListFragment)
+        }
+        binding.openContacts.setOnClickListener {
+            with(viewModel) {
+                checkInDate = binding.checkInDate.text as String
+                checkOutDate = binding.checkOutDate.text as String
+                roomPosition = binding.roomSpinner.selectedItemPosition
+                isCheckInSelected = isCheckInSelected
+            }
+            findNavController().navigate(BookingFragmentDirections.actionBookingFragmentToContactListFragment())
+        }
+        with(viewModel) {
+            checkInDate?.let {
+                binding.checkInDate.text = it
+            }
+            checkOutDate?.let {
+                binding.checkOutDate.text = it
+            }
         }
     }
 
@@ -156,7 +176,7 @@ class BookingFragment : Fragment() {
         }
     }
 
-    private fun getBookingId() : Int? {
+    private fun getBookingId(): Int? {
         return if (editMode) {
             bookingInfo?.booking?.id
         } else 0
@@ -164,7 +184,6 @@ class BookingFragment : Fragment() {
 
     private fun fillRoomSpinner(hotelId: Int) {
         viewModel.getRoomsByHotel(hotelId).observe(viewLifecycleOwner) { rooms ->
-            Log.d("TAG123", "ROOMS: $rooms")
             roomAdapter = RoomSpinnerAdapter(
                 requireContext(), android.R.layout.simple_spinner_item, rooms
             )
@@ -174,24 +193,22 @@ class BookingFragment : Fragment() {
                 val roomIndex = rooms.indexOfFirst { it.id == info.room.id }
                 binding.roomSpinner.setSelection(roomIndex)
             }
-
-
+            viewModel.roomPosition?.let {
+                binding.roomSpinner.setSelection(it)
+            }
         }
     }
 
     private fun showDatePickerDialog(onDateSelected: (Int, Int, Int) -> Unit) {
-        // Get current date
         val calendar = Calendar.getInstance()
         val currentYear = calendar.get(Calendar.YEAR)
         val currentMonth = calendar.get(Calendar.MONTH)
         val currentDayOfMonth = calendar.get(Calendar.DAY_OF_MONTH)
 
-        // Create date picker dialog
         val datePickerDialog = DatePickerDialog(requireContext(), { _, year, month, dayOfMonth ->
             onDateSelected(year, month, dayOfMonth)
         }, currentYear, currentMonth, currentDayOfMonth)
 
-        // Show date picker dialog
         datePickerDialog.show()
     }
 

@@ -2,7 +2,6 @@ package com.example.hotelreservation.Presentation.View.Adapters
 
 import android.view.LayoutInflater
 import android.view.ViewGroup
-import android.widget.Toast
 import androidx.navigation.findNavController
 import androidx.recyclerview.widget.RecyclerView
 import com.example.hotelreservation.Presentation.Repository.Model.Hotel
@@ -19,12 +18,8 @@ class HotelListAdapter(private val hotels: List<Hotel>) : RecyclerView.Adapter<H
                 hotelRoomNumber.text = hotel.roomCount.toString()
             }
             itemView.setOnClickListener {
-                //val action = HotelListFragmentDirections
                 val action = HotelListFragmentDirections.actionHotelListFragmentToBookingFragment(hotel.id)
                 it.findNavController().navigate(action)
-                Toast.makeText(itemView.context, "Click", Toast.LENGTH_SHORT).show()
-//                val bundle = bundleOf("hotelId" to hotel.id)
-//                it.findNavController().navigate(R.id.bookingFragment, bundle)
             }
         }
     }

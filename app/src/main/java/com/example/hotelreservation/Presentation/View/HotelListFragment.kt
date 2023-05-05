@@ -1,7 +1,6 @@
 package com.example.hotelreservation.Presentation.View
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,7 +29,6 @@ class HotelListFragment : Fragment() {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         viewModel = ViewModelProvider(this)[HotelListViewModel::class.java]
         viewModel.getHotelList().observe(viewLifecycleOwner) { hotels ->
-            Log.d("TAG123", hotels.toString())
             setUpRecyclerView(hotels)
         }
         super.onViewCreated(view, savedInstanceState)
